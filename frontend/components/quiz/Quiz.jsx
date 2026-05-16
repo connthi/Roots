@@ -187,6 +187,8 @@ export default function Quiz() {
     );
   }
 
+  if (!question) return null;
+
   return (
     <div className={styles.shell}>
       <header className={styles.header}>
