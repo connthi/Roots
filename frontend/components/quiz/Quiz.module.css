@@ -261,6 +261,27 @@
   margin-bottom: 0.35rem;
 }
 
+.deepDiveHook {
+  margin: 1.25rem 0 0 !important;
+  padding: 1.25rem !important;
+}
+
+.axisDetails {
+  margin-top: 1rem;
+}
+
+.axisSummary {
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.axisSummary:hover {
+  color: var(--accent);
+}
+
 /* Likert scale */
 .likertLabels {
   display: flex;
