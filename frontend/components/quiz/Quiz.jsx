@@ -1,0 +1,186 @@
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { QUESTIONS } from '../../lib/quiz/questions.js';
+import { scoreQuiz } from '../../lib/quiz/score.js';
+import styles from './Quiz.module.css';
+
+const LETTERS = ['A', 'B', 'C', 'D'];
+
+export default function Quiz() {
+  const [phase, setPhase] = useState('welcome');
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [answers, setAnswers] = useState(() => Array(QUESTIONS.length).fill(null));
+  const [result, setResult] = useState(null);
+
+  const question = QUESTIONS[currentIndex];
+  const selected = answers[currentIndex];
+  const progress = ((currentIndex + (phase === 'quiz' ? 1 : 0)) / QUESTIONS.length) * 100;
+
+  function selectOption(index) {
+    const next = [...answers];
+    next[currentIndex] = index;
+    setAnswers(next);
+  }
+
+  function goNext() {
+    if (selected == null) return;
+    if (currentIndex < QUESTIONS.length - 1) {
+      setCurrentIndex((i) => i + 1);
+    } else {
+      setResult(scoreQuiz(answers));
+      setPhase('results');
+    }
+  }
+
+  function goBack() {
+    if (currentIndex > 0) setCurrentIndex((i) => i - 1);
+  }
+
+  function restart() {
+    setPhase('welcome');
+    setCurrentIndex(0);
+    setAnswers(Array(QUESTIONS.length).fill(null));
+    setResult(null);
+  }
+
+  if (phase === 'welcome') {
+    return (
+      <div className={styles.shell}>
+        <header className={styles.header}>
+          <p className={styles.brand}>Roots</p>
+          <h1 className={styles.title}>Financial Personality Quiz</h1>
+          <p className={styles.subtitle}>
+            20 questions across four axes — discover which of 16 spending archetypes fits you.
+          </p>
+        </header>
+        <div className={styles.card}>
+          <p className={styles.subtitle} style={{ margin: 0 }}>
+            The Roots Personality Matrix maps how you think about time, execution, community, and risk.
+          </p>
+          <ul className={styles.welcomeList}>
+            <li>Time Horizon — Visionary vs. Experiential</li>
+            <li>Execution Style — Strategic vs. Trusting</li>
+            <li>Budget Architecture — Focus-Inward vs. Community-Outward</li>
+            <li>Asset Risk — Resilient vs. Adaptable</li>
+          </ul>
+          <div className={styles.actions}>
+            <button type="button" className={styles.btnPrimary} onClick={() => setPhase('quiz')}>
+              Start quiz
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (phase === 'results' && result) {
+    const { archetype, axisResults, code } = result;
+    return (
+      <div className={styles.shell}>
+        <header className={styles.header}>
+          <p className={styles.brand}>Your archetype</p>
+        </header>
+        <div className={styles.card}>
+          <div className={styles.resultHero}>
+            <span className={styles.resultCode}>{code}</span>
+            <h1 className={styles.resultName}>{archetype.name}</h1>
+            <p className={styles.resultVibe}>{archetype.vibe}</p>
+            <div className={styles.traitPills}>
+              {archetype.traits.map((t) => (
+                <span key={t} className={styles.traitPill}>
+                  {t}
+                </span>
+              ))}
+            </div>
+          </div>
+          <h2 className={styles.title} style={{ fontSize: '1.1rem', marginBottom: '0.75rem' }}>
+            Your four axes
+          </h2>
+          <div className={styles.axisGrid}>
+            {axisResults.map((axis) => (
+              <div key={axis.key} className={styles.axisRow}>
+                <p className={styles.axisLabel}>{axis.name}</p>
+                <p className={styles.axisValue}>
+                  {axis.letter} — {axis.label}
+                </p>
+                <p className={styles.axisScore}>
+                  Score: {axis.score > 0 ? '+' : ''}
+                  {axis.score}
+                </p>
+                <p className={styles.axisDesc}>{axis.description}</p>
+              </div>
+            ))}
+          </div>
+          <div className={styles.actions}>
+            <button type="button" className={styles.btnSecondary} onClick={restart}>
+              Retake quiz
+            </button>
+            <Link href="/" className={styles.btnPrimary} style={{ textAlign: 'center', lineHeight: '2.4' }}>
+              Home
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.shell}>
+      <header className={styles.header}>
+        <p className={styles.brand}>Roots</p>
+        <h1 className={styles.title}>Question {question.id}</h1>
+      </header>
+
+      <div className={styles.progressWrap}>
+        <div className={styles.progressMeta}>
+          <span>
+            {currentIndex + 1} of {QUESTIONS.length}
+          </span>
+          <span>{Math.round(progress)}%</span>
+        </div>
+        <div className={styles.progressBar}>
+          <div className={styles.progressFill} style={{ width: `${progress}%` }} />
+        </div>
+      </div>
+
+      <div className={styles.card}>
+        <p className={styles.questionText}>{question.text}</p>
+        <div className={styles.options}>
+          {question.options.map((opt, i) => (
+            <button
+              key={i}
+              type="button"
+              className={`${styles.option} ${selected === i ? styles.optionSelected : ''}`}
+              onClick={() => selectOption(i)}
+            >
+              <span className={styles.optionLetter}>{LETTERS[i]}</span>
+              <span>{opt.label}</span>
+            </button>
+          ))}
+        </div>
+        <div className={styles.actions}>
+          <button
+            type="button"
+            className={styles.btnSecondary}
+            onClick={goBack}
+            disabled={currentIndex === 0}
+          >
+            Back
+          </button>
+          <button
+            type="button"
+            className={styles.btnPrimary}
+            onClick={goNext}
+            disabled={selected == null}
+          >
+            {currentIndex === QUESTIONS.length - 1 ? 'See results' : 'Next'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+

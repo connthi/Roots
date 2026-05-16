@@ -3,6 +3,8 @@ export const metadata = {
   description: 'AI-powered financial literacy and future planning',
 };
 
+import './globals.css';
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
