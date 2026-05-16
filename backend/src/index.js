@@ -2,6 +2,7 @@ import 'dotenv/config';
 import cors from 'cors';
 import express from 'express';
 import quizRouter from './routes/quiz.js';
+import analyzeRouter from './routes/analyze.js';
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -14,6 +15,7 @@ app.get('/health', (_req, res) => {
 });
 
 app.use('/api/quiz', quizRouter);
+app.use('/api/analyze', analyzeRouter);
 
 app.listen(PORT, () => {
   console.log(`Roots API listening on http://localhost:${PORT}`);

@@ -1,0 +1,357 @@
+.container {
+  min-height: 100vh;
+  background-color: #0d1117;
+  color: #c9d1d9;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  padding: 0;
+  margin: 0;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-size: 1.5rem;
+  color: #58a6ff;
+  background-color: #0d1117;
+}
+
+.header {
+  background: linear-gradient(180deg, rgba(22, 27, 34, 1) 0%, rgba(13, 17, 23, 1) 100%);
+  border-bottom: 1px solid #30363d;
+  padding: 2rem;
+}
+
+.headerTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-bottom: 2rem;
+}
+
+.brand {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: #fff;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.logoutBtn {
+  color: #8b949e;
+  text-decoration: none;
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #30363d;
+  transition: all 0.2s;
+}
+
+.logoutBtn:hover {
+  color: #c9d1d9;
+  border-color: #8b949e;
+  background-color: rgba(139, 148, 158, 0.1);
+}
+
+.hero {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.heroMain {
+  flex: 1;
+  min-width: 300px;
+}
+
+.heroCode {
+  display: inline-block;
+  background-color: rgba(88, 166, 255, 0.1);
+  color: #58a6ff;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.heroTitle {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 1rem 0;
+  line-height: 1.1;
+  letter-spacing: -1px;
+}
+
+.heroDesc {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #8b949e;
+  max-width: 600px;
+  margin: 0;
+}
+
+.heroScores {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.scoreBox {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  min-width: 140px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+
+.scoreLabel {
+  display: block;
+  font-size: 0.85rem;
+  color: #8b949e;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.5rem;
+}
+
+.scoreValue {
+  display: block;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #3fb950;
+  line-height: 1;
+}
+
+.scoreValueGrade {
+  display: block;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #d2a8ff;
+  line-height: 1;
+}
+
+.main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.sectionTitle {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 1.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.sectionTitle::before {
+  content: '';
+  display: block;
+  width: 4px;
+  height: 24px;
+  background-color: #58a6ff;
+  border-radius: 2px;
+}
+
+.subtitle {
+  color: #8b949e;
+  margin-top: -1rem;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+}
+
+/* Spending Analysis */
+.analysisCard {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+.concern {
+  font-size: 1.1rem;
+  color: #ff7b72;
+  background-color: rgba(255, 123, 114, 0.1);
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid #ff7b72;
+  margin: 0 0 2rem 0;
+}
+
+.breakdownGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.breakdownItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.bdLabel {
+  font-size: 0.9rem;
+  color: #8b949e;
+}
+
+.bdValue {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #c9d1d9;
+}
+
+/* Recommendations */
+.recGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+.recCard {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.recCard:hover {
+  transform: translateY(-2px);
+  border-color: #8b949e;
+}
+
+.recHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.recTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.badgehigh {
+  background-color: rgba(210, 168, 255, 0.1);
+  color: #d2a8ff;
+  border: 1px solid rgba(210, 168, 255, 0.2);
+}
+
+.badgemedium {
+  background-color: rgba(88, 166, 255, 0.1);
+  color: #58a6ff;
+  border: 1px solid rgba(88, 166, 255, 0.2);
+}
+
+.badgelow {
+  background-color: rgba(139, 148, 158, 0.1);
+  color: #8b949e;
+  border: 1px solid rgba(139, 148, 158, 0.2);
+}
+
+.recDesc {
+  color: #8b949e;
+  line-height: 1.6;
+  margin: 0 0 1.5rem 0;
+  flex: 1;
+}
+
+.recTime {
+  font-size: 0.85rem;
+  color: #58a6ff;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Projections */
+.projGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.projCard {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.projCard h4 {
+  color: #fff;
+  margin: 0 0 1.5rem 0;
+  font-size: 1.1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #30363d;
+}
+
+.projCompare {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.projCompare > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.projCompare span {
+  color: #8b949e;
+}
+
+.projCompare strong {
+  font-size: 1.25rem;
+  color: #c9d1d9;
+}
+
+.textGreen {
+  color: #3fb950 !important;
+}
+
+@media (max-width: 768px) {
+  .hero {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .heroScores {
+    width: 100%;
+    justify-content: stretch;
+  }
+  .scoreBox {
+    flex: 1;
+  }
+}

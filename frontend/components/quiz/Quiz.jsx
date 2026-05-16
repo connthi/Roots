@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { QUESTIONS } from '../../lib/quiz/questions.js';
 import { scoreQuiz } from '../../lib/quiz/score.js';
 import styles from './Quiz.module.css';
@@ -13,6 +14,9 @@ export default function Quiz() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState(() => Array(QUESTIONS.length).fill(null));
   const [result, setResult] = useState(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [error, setError] = useState(null);
+  const router = useRouter();
 
   const question = QUESTIONS[currentIndex];
   const selected = answers[currentIndex];
@@ -24,13 +28,65 @@ export default function Quiz() {
     setAnswers(next);
   }
 
-  function goNext() {
+  async function goNext() {
     if (selected == null) return;
     if (currentIndex < QUESTIONS.length - 1) {
       setCurrentIndex((i) => i + 1);
     } else {
-      setResult(scoreQuiz(answers));
-      setPhase('results');
+      // Quiz finished, score it
+      const finalResult = scoreQuiz(answers);
+      setResult(finalResult);
+      setPhase('analyzing');
+      setIsAnalyzing(true);
+      setError(null);
+
+      // Call Backend API with mock financial data + real archetype
+      try {
+        const payload = {
+          // Mock Financial Data for Hackathon
+          age: 22,
+          annual_income: 45000,
+          monthly_rent: 1200,
+          monthly_food: 400,
+          monthly_transport: 150,
+          monthly_entertainment: 200,
+          monthly_subscriptions: 60,
+          monthly_savings: 300,
+          debt_total: 12000,
+          debt_monthly_payment: 250,
+          // Real Quiz Data
+          personality_code: finalResult.code,
+          archetype_name: finalResult.archetype.name
+        };
+
+        const res = await fetch('http://localhost:4000/api/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        
+        if (!res.ok) {
+          throw new Error(data.error || 'Failed to generate profile');
+        }
+
+        // Save result to session storage to pass to Dashboard
+        sessionStorage.setItem('roots_profile', JSON.stringify({
+          archetype: finalResult,
+          bedrock: data
+        }));
+
+        // Redirect to dashboard
+        router.push('/dashboard');
+        
+      } catch (err) {
+        console.error("Analysis Error:", err);
+        setError(err.message);
+        setPhase('results'); // Fallback to basic results if API fails
+      } finally {
+        setIsAnalyzing(false);
+      }
     }
   }
 
@@ -43,6 +99,30 @@ export default function Quiz() {
     setCurrentIndex(0);
     setAnswers(Array(QUESTIONS.length).fill(null));
     setResult(null);
+    setError(null);
+  }
+
+  if (phase === 'analyzing') {
+    return (
+      <div className={styles.shell}>
+        <header className={styles.header}>
+          <p className={styles.brand}>Roots</p>
+          <h1 className={styles.title}>Analyzing your profile...</h1>
+          <p className={styles.subtitle}>
+            Our AI is crunching the numbers to generate your personalized financial breakdown.
+            This may take 10-30 seconds.
+          </p>
+        </header>
+        <div className={styles.card} style={{ textAlign: 'center', padding: '4rem 2rem' }}>
+          <div style={{ display: 'inline-block', width: '40px', height: '40px', border: '3px solid rgba(255,255,255,0.3)', borderRadius: '50%', borderTopColor: '#fff', animation: 'spin 1s ease-in-out infinite' }} />
+          <style>{`
+            @keyframes spin {
+              to { transform: rotate(360deg); }
+            }
+          `}</style>
+        </div>
+      </div>
+    );
   }
 
   if (phase === 'welcome') {
