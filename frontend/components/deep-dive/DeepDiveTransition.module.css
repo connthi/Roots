@@ -1,0 +1,251 @@
+.card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid rgba(107, 207, 138, 0.28);
+  background: linear-gradient(145deg, rgba(26, 34, 24, 0.98) 0%, rgba(15, 20, 16, 0.98) 55%, rgba(20, 28, 22, 1) 100%);
+  padding: 1.75rem 1.5rem;
+  margin: 0 2rem 2rem;
+  max-width: 1200px;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+    0 24px 48px rgba(0, 0, 0, 0.35);
+}
+
+.glow {
+  pointer-events: none;
+  position: absolute;
+  top: -40%;
+  right: -10%;
+  width: 55%;
+  height: 120%;
+  background: radial-gradient(ellipse, rgba(107, 207, 138, 0.14) 0%, transparent 70%);
+}
+
+.grid {
+  position: relative;
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: 1.15fr 0.85fr;
+    align-items: center;
+  }
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #6bcf8a;
+  margin: 0 0 0.65rem;
+}
+
+.stepPill {
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(107, 207, 138, 0.12);
+  border: 1px solid rgba(107, 207, 138, 0.25);
+}
+
+.headline {
+  font-size: clamp(1.35rem, 3.5vw, 1.75rem);
+  font-weight: 800;
+  line-height: 1.2;
+  margin: 0 0 0.75rem;
+  color: #f4f7f2;
+}
+
+.subhead {
+  margin: 0 0 1rem;
+  color: #a8b5a0;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  max-width: 38rem;
+}
+
+.callout {
+  margin: 0 0 1rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  background: rgba(107, 207, 138, 0.08);
+  border-left: 3px solid #6bcf8a;
+  font-size: 0.88rem;
+  color: #d4e8d0;
+  line-height: 1.45;
+}
+
+.bullets {
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.bullet {
+  display: flex;
+  gap: 0.6rem;
+  font-size: 0.88rem;
+  color: #c9d4c4;
+  line-height: 1.4;
+}
+
+.bulletIcon {
+  flex-shrink: 0;
+  color: #6bcf8a;
+  font-weight: 700;
+}
+
+.flourishes {
+  margin: 0 0 1.25rem;
+  font-size: 0.8rem;
+  color: #8a9a84;
+  line-height: 1.45;
+}
+
+.flourish + .flourish {
+  margin-top: 0.25rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.ctaPrimary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.85rem 1.35rem;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #6bcf8a 0%, #3d8f58 100%);
+  color: #0a120c;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, filter 0.15s ease;
+  box-shadow: 0 8px 24px rgba(107, 207, 138, 0.25);
+}
+
+.ctaPrimary:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.ctaSecondary {
+  padding: 0.75rem 1rem;
+  border: none;
+  background: transparent;
+  color: #8a9a84;
+  font-size: 0.85rem;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.ctaSecondary:hover {
+  color: #a8b5a0;
+}
+
+.trust {
+  margin: 0.85rem 0 0;
+  font-size: 0.72rem;
+  color: #6d7d68;
+  letter-spacing: 0.02em;
+}
+
+.visual {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(0, 0, 0, 0.25);
+  padding: 1rem 1rem 0.75rem;
+}
+
+.visualLabel {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #6d7d68;
+  margin: 0 0 0.75rem;
+}
+
+.chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.35rem;
+  height: 88px;
+  padding-bottom: 0.25rem;
+}
+
+.barNow {
+  flex: 1;
+  border-radius: 6px 6px 0 0;
+  background: linear-gradient(180deg, #4a5d52 0%, #2e3d2a 100%);
+  min-height: 28%;
+}
+
+.barOptimized {
+  flex: 1;
+  border-radius: 6px 6px 0 0;
+  background: linear-gradient(180deg, #6bcf8a 0%, #3d8f58 100%);
+  min-height: 55%;
+  box-shadow: 0 0 20px rgba(107, 207, 138, 0.2);
+}
+
+.barTall {
+  min-height: 92%;
+}
+
+.legend {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.65rem;
+  font-size: 0.72rem;
+  color: #8a9a84;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.dotNow,
+.dotOpt {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.dotNow {
+  background: #4a5d52;
+}
+
+.dotOpt {
+  background: #6bcf8a;
+}
+
+.locked {
+  margin-top: 0.75rem;
+  text-align: center;
+  font-size: 0.75rem;
+  color: #6bcf8a;
+  font-weight: 600;
+}
+
+.dismissed {
+  opacity: 0.6;
+}

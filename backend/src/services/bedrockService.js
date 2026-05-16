@@ -35,6 +35,18 @@ Risk Tolerance: ${surveyData.risk_tolerance ?? 'not provided'}
 Spending Personality Code: ${surveyData.personality_code ?? 'not provided'}
 Archetype: ${surveyData.archetype_name ?? 'not provided'}
 
+=== DEEP DIVE (if provided) ===
+Monthly Net Income: $${surveyData.monthly_income ?? 'not provided'}
+Liquid Cash: $${surveyData.liquid_cash ?? 'not provided'}
+Fixed Monthly Expenses: $${surveyData.fixed_expenses ?? 'not provided'}
+Discretionary Weekly Spend: $${surveyData.discretionary_weekly ?? 'not provided'}
+Credit Card Debt: $${surveyData.credit_card_debt ?? 'not provided'}
+Long-Term Debt: $${surveyData.long_term_debt ?? 'not provided'}
+Total Invested: $${surveyData.total_invested ?? 'not provided'}
+Monthly Savings/Investment Rate: $${surveyData.monthly_savings_rate ?? 'not provided'}
+Runway (months): ${surveyData.runway_months ?? 'not provided'}
+Emergency Threshold Bracket: ${surveyData.emergency_threshold ?? 'not provided'}
+
 === INSTRUCTIONS ===
 Return a JSON object with exactly this structure:
 {
@@ -110,28 +122,36 @@ export async function generateProfile(surveyData) {
  * Mock profile for testing without Bedrock access.
  */
 function getMockProfile(surveyData) {
-  const monthlyIncome = (surveyData.annual_income || 45000) / 12;
+  const monthlyIncome =
+    surveyData.monthly_income ??
+    (surveyData.annual_income ? surveyData.annual_income / 12 : 45000 / 12);
   const totalExpenses =
+    surveyData.fixed_expenses ??
     (surveyData.monthly_rent || 0) +
-    (surveyData.monthly_food || 0) +
-    (surveyData.monthly_transport || 0) +
-    (surveyData.monthly_entertainment || 0) +
-    (surveyData.monthly_subscriptions || 0) +
-    (surveyData.debt_monthly_payment || 0);
+      (surveyData.monthly_food || 0) +
+      (surveyData.monthly_transport || 0) +
+      (surveyData.monthly_entertainment || 0) +
+      (surveyData.monthly_subscriptions || 0) +
+      (surveyData.debt_monthly_payment || 0);
+  const savingsRate =
+    surveyData.monthly_savings_rate ?? surveyData.monthly_savings ?? 0;
 
   return {
     personality_summary: `Based on your ${surveyData.archetype_name || 'financial'} profile, you show a balanced approach to money management with room for optimization.`,
     spending_analysis: {
       total_monthly_expenses: totalExpenses,
       total_monthly_income: Math.round(monthlyIncome),
-      savings_rate_percent: Math.round(((monthlyIncome - totalExpenses) / monthlyIncome) * 100),
+      savings_rate_percent: Math.round(
+        (savingsRate / Math.max(monthlyIncome, 1)) * 100,
+      ),
       expense_breakdown: {
-        rent: surveyData.monthly_rent || 0,
+        housing: surveyData.monthly_rent || Math.round(totalExpenses * 0.42),
         food: surveyData.monthly_food || 0,
         transport: surveyData.monthly_transport || 0,
         entertainment: surveyData.monthly_entertainment || 0,
         subscriptions: surveyData.monthly_subscriptions || 0,
         debt: surveyData.debt_monthly_payment || 0,
+        current_savings: savingsRate,
       },
       top_concern: 'Optimizing discretionary spending',
     },

@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import DeepDiveTransition from '../deep-dive/DeepDiveTransition.jsx';
+import { clearProfile, saveProfile } from '../../lib/profileSession.js';
 import { DISPLAY_QUESTIONS, LIKERT_LABELS } from '../../lib/quiz/questions.js';
 import { scoreQuiz } from '../../lib/quiz/score.js';
 import styles from './Quiz.module.css';
@@ -12,8 +13,6 @@ export default function Quiz() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState({});
   const [result, setResult] = useState(null);
-  const [error, setError] = useState(null);
-  const router = useRouter();
 
   const question = DISPLAY_QUESTIONS[currentIndex];
   const selected = question ? (answers[question.id] ?? null) : null;
@@ -30,54 +29,16 @@ export default function Quiz() {
     }
   }
 
-  async function finishQuiz(finalAnswers) {
+  function finishQuiz(finalAnswers) {
     const finalResult = scoreQuiz(finalAnswers);
     setResult(finalResult);
-    setPhase('analyzing');
-    setError(null);
 
-    try {
-      const payload = {
-        age: 22,
-        annual_income: 45000,
-        monthly_rent: 1200,
-        monthly_food: 400,
-        monthly_transport: 150,
-        monthly_entertainment: 200,
-        monthly_subscriptions: 60,
-        monthly_savings: 300,
-        debt_total: 12000,
-        debt_monthly_payment: 250,
-        personality_code: finalResult.code,
-        archetype_name: finalResult.archetype.name,
-      };
+    saveProfile({
+      archetype: finalResult,
+      personalityComplete: true,
+    });
 
-      const res = await fetch('http://localhost:4000/api/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to generate profile');
-      }
-
-      sessionStorage.setItem(
-        'roots_profile',
-        JSON.stringify({
-          archetype: finalResult,
-          bedrock: data,
-        }),
-      );
-
-      router.push('/dashboard');
-    } catch (err) {
-      console.error('Analysis Error:', err);
-      setError(err.message);
-      setPhase('results');
-    }
+    setPhase('reveal');
   }
 
   function goBack() {
@@ -85,29 +46,11 @@ export default function Quiz() {
   }
 
   function restart() {
+    clearProfile();
     setPhase('welcome');
     setCurrentIndex(0);
     setAnswers({});
     setResult(null);
-    setError(null);
-  }
-
-  if (phase === 'analyzing') {
-    return (
-      <div className={styles.shell}>
-        <header className={styles.header}>
-          <p className={styles.brand}>Roots</p>
-          <h1 className={styles.title}>Analyzing your profile...</h1>
-          <p className={styles.subtitle}>
-            Our AI is crunching the numbers to generate your personalized financial breakdown.
-            This may take 10–30 seconds.
-          </p>
-        </header>
-        <div className={styles.card} style={{ textAlign: 'center', padding: '4rem 2rem' }}>
-          <div className={styles.spinner} />
-        </div>
-      </div>
-    );
   }
 
   if (phase === 'welcome') {
@@ -135,17 +78,20 @@ export default function Quiz() {
     );
   }
 
-  if (phase === 'results' && result) {
+  if (phase === 'reveal' && result) {
     const { archetype, axisResults, code } = result;
     return (
       <div className={styles.shell}>
         <header className={styles.header}>
           <p className={styles.brand}>Your archetype</p>
+          <h1 className={styles.title} style={{ fontSize: '1.35rem' }}>
+            Step 1 complete — unlock your numbers next
+          </h1>
         </header>
         <div className={styles.card}>
           <div className={styles.resultHero}>
             <span className={styles.resultCode}>{code}</span>
-            <h1 className={styles.resultName}>{archetype.name}</h1>
+            <h2 className={styles.resultName}>{archetype.name}</h2>
             <p className={styles.resultVibe}>{archetype.vibe}</p>
             <div className={styles.traitPills}>
               {archetype.traits.map((t) => (
@@ -155,32 +101,39 @@ export default function Quiz() {
               ))}
             </div>
           </div>
-          <h2 className={styles.title} style={{ fontSize: '1.1rem', marginBottom: '0.75rem' }}>
-            Your four axes
-          </h2>
-          <div className={styles.axisGrid}>
-            {axisResults.map((axis) => (
-              <div key={axis.key} className={styles.axisRow}>
-                <p className={styles.axisLabel}>{axis.name}</p>
-                <p className={styles.axisValue}>
-                  {axis.letter} — {axis.label}
-                </p>
-                <p className={styles.axisScore}>
-                  Score: {axis.score > 0 ? '+' : ''}
-                  {axis.score}
-                </p>
-                <p className={styles.axisDesc}>{axis.description}</p>
-              </div>
-            ))}
-          </div>
-          {error && <p className={styles.errorText}>{error}</p>}
+
+          <DeepDiveTransition archetype={{ ...archetype, code }} className={styles.deepDiveHook} />
+
+          <details className={styles.axisDetails}>
+            <summary className={styles.axisSummary}>View your four axes</summary>
+            <div className={styles.axisGrid}>
+              {axisResults.map((axis) => (
+                <div key={axis.key} className={styles.axisRow}>
+                  <p className={styles.axisLabel}>{axis.name}</p>
+                  <p className={styles.axisValue}>
+                    {axis.letter} — {axis.label}
+                  </p>
+                  <p className={styles.axisScore}>
+                    Score: {axis.score > 0 ? '+' : ''}
+                    {axis.score}
+                  </p>
+                  <p className={styles.axisDesc}>{axis.description}</p>
+                </div>
+              ))}
+            </div>
+          </details>
+
           <div className={styles.actions}>
-            <button type="button" className={styles.btnSecondary} onClick={restart}>
-              Retake quiz
-            </button>
-            <Link href="/" className={styles.btnPrimary} style={{ textAlign: 'center', lineHeight: '2.4' }}>
-              Home
+            <Link
+              href="/deep-dive"
+              className={styles.btnPrimary}
+              style={{ textAlign: 'center', lineHeight: '2.4', flex: 2 }}
+            >
+              Continue to Deep Dive →
             </Link>
+            <button type="button" className={styles.btnSecondary} onClick={restart}>
+              Retake
+            </button>
           </div>
         </div>
       </div>
