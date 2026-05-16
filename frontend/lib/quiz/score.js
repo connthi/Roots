@@ -1,25 +1,19 @@
 import { ARCHETYPES, AXES } from './archetypes.js';
-import { QUESTIONS } from './questions.js';
+import { QUESTIONS, likertDelta } from './questions.js';
 
 const AXIS_KEYS = ['axis1', 'axis2', 'axis3', 'axis4'];
 
 /**
- * @param {number[]} answers - selected option index per question (0–3)
+ * @param {Record<number, number>} answersByQuestionId - question id → likert index (0–5)
  */
-export function scoreQuiz(answers) {
+export function scoreQuiz(answersByQuestionId) {
   const totals = { axis1: 0, axis2: 0, axis3: 0, axis4: 0 };
 
-  answers.forEach((optionIndex, questionIndex) => {
-    const question = QUESTIONS[questionIndex];
-    const option = question?.options[optionIndex];
-    if (!option?.deltas) return;
-
-    for (const key of AXIS_KEYS) {
-      if (option.deltas[key] != null) {
-        totals[key] += option.deltas[key];
-      }
-    }
-  });
+  for (const question of QUESTIONS) {
+    const likertIndex = answersByQuestionId[question.id];
+    if (likertIndex == null) continue;
+    totals[question.axis] += likertDelta(question.polarity, likertIndex);
+  }
 
   const letters = {
     axis1: totals.axis1 >= 0 ? 'V' : 'E',

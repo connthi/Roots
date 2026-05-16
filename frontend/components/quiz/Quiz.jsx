@@ -3,90 +3,80 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { QUESTIONS } from '../../lib/quiz/questions.js';
+import { DISPLAY_QUESTIONS, LIKERT_LABELS } from '../../lib/quiz/questions.js';
 import { scoreQuiz } from '../../lib/quiz/score.js';
 import styles from './Quiz.module.css';
-
-const LETTERS = ['A', 'B', 'C', 'D'];
 
 export default function Quiz() {
   const [phase, setPhase] = useState('welcome');
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [answers, setAnswers] = useState(() => Array(QUESTIONS.length).fill(null));
+  const [answers, setAnswers] = useState({});
   const [result, setResult] = useState(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState(null);
   const router = useRouter();
 
-  const question = QUESTIONS[currentIndex];
-  const selected = answers[currentIndex];
-  const progress = ((currentIndex + (phase === 'quiz' ? 1 : 0)) / QUESTIONS.length) * 100;
+  const question = DISPLAY_QUESTIONS[currentIndex];
+  const selected = question ? (answers[question.id] ?? null) : null;
+  const progress = ((currentIndex + (phase === 'quiz' ? 1 : 0)) / DISPLAY_QUESTIONS.length) * 100;
 
-  function selectOption(index) {
-    const next = [...answers];
-    next[currentIndex] = index;
+  function selectLikert(likertIndex) {
+    const next = { ...answers, [question.id]: likertIndex };
     setAnswers(next);
+
+    if (currentIndex < DISPLAY_QUESTIONS.length - 1) {
+      setTimeout(() => setCurrentIndex((i) => i + 1), 180);
+    } else {
+      finishQuiz(next);
+    }
   }
 
-  async function goNext() {
-    if (selected == null) return;
-    if (currentIndex < QUESTIONS.length - 1) {
-      setCurrentIndex((i) => i + 1);
-    } else {
-      // Quiz finished, score it
-      const finalResult = scoreQuiz(answers);
-      setResult(finalResult);
-      setPhase('analyzing');
-      setIsAnalyzing(true);
-      setError(null);
+  async function finishQuiz(finalAnswers) {
+    const finalResult = scoreQuiz(finalAnswers);
+    setResult(finalResult);
+    setPhase('analyzing');
+    setError(null);
 
-      // Call Backend API with mock financial data + real archetype
-      try {
-        const payload = {
-          // Mock Financial Data for Hackathon
-          age: 22,
-          annual_income: 45000,
-          monthly_rent: 1200,
-          monthly_food: 400,
-          monthly_transport: 150,
-          monthly_entertainment: 200,
-          monthly_subscriptions: 60,
-          monthly_savings: 300,
-          debt_total: 12000,
-          debt_monthly_payment: 250,
-          // Real Quiz Data
-          personality_code: finalResult.code,
-          archetype_name: finalResult.archetype.name
-        };
+    try {
+      const payload = {
+        age: 22,
+        annual_income: 45000,
+        monthly_rent: 1200,
+        monthly_food: 400,
+        monthly_transport: 150,
+        monthly_entertainment: 200,
+        monthly_subscriptions: 60,
+        monthly_savings: 300,
+        debt_total: 12000,
+        debt_monthly_payment: 250,
+        personality_code: finalResult.code,
+        archetype_name: finalResult.archetype.name,
+      };
 
-        const res = await fetch('http://localhost:4000/api/analyze', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
+      const res = await fetch('http://localhost:4000/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
 
-        const data = await res.json();
-        
-        if (!res.ok) {
-          throw new Error(data.error || 'Failed to generate profile');
-        }
+      const data = await res.json();
 
-        // Save result to session storage to pass to Dashboard
-        sessionStorage.setItem('roots_profile', JSON.stringify({
-          archetype: finalResult,
-          bedrock: data
-        }));
-
-        // Redirect to dashboard
-        router.push('/dashboard');
-        
-      } catch (err) {
-        console.error("Analysis Error:", err);
-        setError(err.message);
-        setPhase('results'); // Fallback to basic results if API fails
-      } finally {
-        setIsAnalyzing(false);
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to generate profile');
       }
+
+      sessionStorage.setItem(
+        'roots_profile',
+        JSON.stringify({
+          archetype: finalResult,
+          bedrock: data,
+        }),
+      );
+
+      router.push('/dashboard');
+    } catch (err) {
+      console.error('Analysis Error:', err);
+      setError(err.message);
+      setPhase('results');
     }
   }
 
@@ -97,7 +87,7 @@ export default function Quiz() {
   function restart() {
     setPhase('welcome');
     setCurrentIndex(0);
-    setAnswers(Array(QUESTIONS.length).fill(null));
+    setAnswers({});
     setResult(null);
     setError(null);
   }
@@ -110,16 +100,11 @@ export default function Quiz() {
           <h1 className={styles.title}>Analyzing your profile...</h1>
           <p className={styles.subtitle}>
             Our AI is crunching the numbers to generate your personalized financial breakdown.
-            This may take 10-30 seconds.
+            This may take 10–30 seconds.
           </p>
         </header>
         <div className={styles.card} style={{ textAlign: 'center', padding: '4rem 2rem' }}>
-          <div style={{ display: 'inline-block', width: '40px', height: '40px', border: '3px solid rgba(255,255,255,0.3)', borderRadius: '50%', borderTopColor: '#fff', animation: 'spin 1s ease-in-out infinite' }} />
-          <style>{`
-            @keyframes spin {
-              to { transform: rotate(360deg); }
-            }
-          `}</style>
+          <div className={styles.spinner} />
         </div>
       </div>
     );
@@ -132,19 +117,14 @@ export default function Quiz() {
           <p className={styles.brand}>Roots</p>
           <h1 className={styles.title}>Financial Personality Quiz</h1>
           <p className={styles.subtitle}>
-            20 questions across four axes — discover which of 16 spending archetypes fits you.
+            20 quick statements — agree or disagree. About 3 minutes.
           </p>
         </header>
         <div className={styles.card}>
           <p className={styles.subtitle} style={{ margin: 0 }}>
-            The Roots Personality Matrix maps how you think about time, execution, community, and risk.
+            Discover which of 16 spending archetypes fits you. No right or wrong answers — just
+            be honest.
           </p>
-          <ul className={styles.welcomeList}>
-            <li>Time Horizon — Visionary vs. Experiential</li>
-            <li>Execution Style — Strategic vs. Trusting</li>
-            <li>Budget Architecture — Focus-Inward vs. Community-Outward</li>
-            <li>Asset Risk — Resilient vs. Adaptable</li>
-          </ul>
           <div className={styles.actions}>
             <button type="button" className={styles.btnPrimary} onClick={() => setPhase('quiz')}>
               Start quiz
@@ -193,6 +173,7 @@ export default function Quiz() {
               </div>
             ))}
           </div>
+          {error && <p className={styles.errorText}>{error}</p>}
           <div className={styles.actions}>
             <button type="button" className={styles.btnSecondary} onClick={restart}>
               Retake quiz
@@ -210,13 +191,12 @@ export default function Quiz() {
     <div className={styles.shell}>
       <header className={styles.header}>
         <p className={styles.brand}>Roots</p>
-        <h1 className={styles.title}>Question {question.id}</h1>
       </header>
 
       <div className={styles.progressWrap}>
         <div className={styles.progressMeta}>
           <span>
-            {currentIndex + 1} of {QUESTIONS.length}
+            {currentIndex + 1} of {DISPLAY_QUESTIONS.length}
           </span>
           <span>{Math.round(progress)}%</span>
         </div>
@@ -225,21 +205,29 @@ export default function Quiz() {
         </div>
       </div>
 
-      <div className={styles.card}>
+      <div className={styles.card} key={question.id}>
         <p className={styles.questionText}>{question.text}</p>
-        <div className={styles.options}>
-          {question.options.map((opt, i) => (
+
+        <div className={styles.likertLabels}>
+          <span>Agree</span>
+          <span>Disagree</span>
+        </div>
+
+        <div className={styles.likertRow} role="group" aria-label="Agreement scale">
+          {LIKERT_LABELS.map((label, i) => (
             <button
               key={i}
               type="button"
-              className={`${styles.option} ${selected === i ? styles.optionSelected : ''}`}
-              onClick={() => selectOption(i)}
-            >
-              <span className={styles.optionLetter}>{LETTERS[i]}</span>
-              <span>{opt.label}</span>
-            </button>
+              title={label}
+              aria-label={label}
+              className={`${styles.likertBubble} ${styles[`likertBubble${i}`]} ${
+                selected === i ? styles.likertBubbleSelected : ''
+              }`}
+              onClick={() => selectLikert(i)}
+            />
           ))}
         </div>
+
         <div className={styles.actions}>
           <button
             type="button"
@@ -249,18 +237,8 @@ export default function Quiz() {
           >
             Back
           </button>
-          <button
-            type="button"
-            className={styles.btnPrimary}
-            onClick={goNext}
-            disabled={selected == null}
-          >
-            {currentIndex === QUESTIONS.length - 1 ? 'See results' : 'Next'}
-          </button>
         </div>
       </div>
     </div>
   );
 }
-
-

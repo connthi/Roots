@@ -1,6 +1,6 @@
 /**
  * Backend scoring mirror for the 20-question personality quiz.
- * Accepts an array of option indices (0–3) per question, in order.
+ * Accepts { answers: { [questionId]: likertIndex } } where likertIndex is 0–5.
  */
 
 const AXIS_KEYS = ['axis1', 'axis2', 'axis3', 'axis4'];
@@ -12,44 +12,73 @@ const LETTER_MAP = {
   axis4: { pos: 'A', neg: 'R' },
 };
 
-/** Minimal deltas keyed by question id (1–20) and option index (0–3). */
-export const QUIZ_DELTAS = {
-  1: [{ axis1: 2 }, { axis1: 1 }, { axis1: -1 }, { axis1: -2 }],
-  2: [{ axis4: -2 }, { axis4: -1 }, { axis4: 1 }, { axis4: 2 }],
-  3: [{ axis2: 2 }, { axis2: 1 }, { axis2: -1 }, { axis2: -2 }],
-  4: [{ axis3: 2 }, { axis3: 1 }, { axis3: -1 }, { axis3: -2 }],
-  5: [{ axis1: 2 }, { axis1: 1 }, { axis1: -1 }, { axis1: -2 }],
-  6: [{ axis4: -2 }, { axis4: -1 }, { axis4: 1 }, { axis4: 2 }],
-  7: [{ axis2: 2 }, { axis2: 1 }, { axis2: -1 }, { axis2: -2 }],
-  8: [{ axis3: 2 }, { axis3: 1 }, { axis3: -1 }, { axis3: -2 }],
-  9: [{ axis1: 2 }, { axis1: 1 }, { axis1: -1 }, { axis1: -2 }],
-  10: [{ axis4: -2 }, { axis4: -1 }, { axis4: 1 }, { axis4: 2 }],
-  11: [{ axis2: 2 }, { axis2: 1 }, { axis2: -1 }, { axis2: -2 }],
-  12: [{ axis3: 2 }, { axis3: 1 }, { axis3: -1 }, { axis3: -2 }],
-  13: [{ axis1: 2 }, { axis1: 1 }, { axis1: -1 }, { axis1: -2 }],
-  14: [{ axis4: -2 }, { axis4: -1 }, { axis4: 1 }, { axis4: 2 }],
-  15: [{ axis2: 2 }, { axis2: 1 }, { axis2: -1 }, { axis2: -2 }],
-  16: [{ axis3: 2 }, { axis3: 1 }, { axis3: -1 }, { axis3: -2 }],
-  17: [{ axis1: 2 }, { axis1: 1 }, { axis1: -1 }, { axis1: -2 }],
-  18: [{ axis4: -2 }, { axis4: -1 }, { axis4: 1 }, { axis4: 2 }],
-  19: [{ axis2: 2 }, { axis2: 1 }, { axis2: -1 }, { axis2: -2 }],
-  20: [{ axis3: 2 }, { axis3: 1 }, { axis3: -1 }, { axis3: -2 }],
+const LIKERT_DELTAS = [3, 2, 1, -1, -2, -3];
+
+/** questionId → { axis, polarity } */
+export const QUIZ_QUESTIONS = {
+  1: { axis: 'axis1', polarity: 1 },
+  2: { axis: 'axis1', polarity: 1 },
+  3: { axis: 'axis1', polarity: 1 },
+  4: { axis: 'axis1', polarity: -1 },
+  5: { axis: 'axis1', polarity: -1 },
+  6: { axis: 'axis2', polarity: 1 },
+  7: { axis: 'axis2', polarity: 1 },
+  8: { axis: 'axis2', polarity: 1 },
+  9: { axis: 'axis2', polarity: -1 },
+  10: { axis: 'axis2', polarity: -1 },
+  11: { axis: 'axis3', polarity: 1 },
+  12: { axis: 'axis3', polarity: 1 },
+  13: { axis: 'axis3', polarity: 1 },
+  14: { axis: 'axis3', polarity: -1 },
+  15: { axis: 'axis3', polarity: -1 },
+  16: { axis: 'axis4', polarity: 1 },
+  17: { axis: 'axis4', polarity: -1 },
+  18: { axis: 'axis4', polarity: -1 },
+  19: { axis: 'axis4', polarity: 1 },
+  20: { axis: 'axis4', polarity: -1 },
 };
 
-export function scorePersonality(answers) {
-  if (!Array.isArray(answers) || answers.length !== 20) {
-    throw new Error('answers must be an array of 20 option indices (0–3)');
-  }
+function likertDelta(polarity, likertIndex) {
+  return polarity * LIKERT_DELTAS[likertIndex];
+}
 
+/**
+ * @param {Record<string, number> | number[]} answers
+ *   Object keyed by question id (1–20) → likert 0–5, OR legacy flat array in display order.
+ */
+export function scorePersonality(answers) {
   const totals = { axis1: 0, axis2: 0, axis3: 0, axis4: 0 };
 
-  answers.forEach((optionIndex, i) => {
-    const deltas = QUIZ_DELTAS[i + 1]?.[optionIndex];
-    if (!deltas) throw new Error(`Invalid answer at question ${i + 1}`);
-    for (const key of AXIS_KEYS) {
-      if (deltas[key] != null) totals[key] += deltas[key];
+  if (Array.isArray(answers)) {
+    const displayOrder = [
+      15, 8, 2, 19, 11, 6, 20, 4, 17, 1, 13, 9, 16, 3, 12, 7, 14, 5, 18, 10,
+    ];
+    if (answers.length !== 20) {
+      throw new Error('answers must be an array of 20 likert indices (0–5) in display order');
     }
-  });
+    answers.forEach((likertIndex, i) => {
+      const questionId = displayOrder[i];
+      const meta = QUIZ_QUESTIONS[questionId];
+      if (likertIndex < 0 || likertIndex > 5 || !meta) {
+        throw new Error(`Invalid answer at display position ${i + 1}`);
+      }
+      totals[meta.axis] += likertDelta(meta.polarity, likertIndex);
+    });
+  } else if (answers && typeof answers === 'object') {
+    for (let id = 1; id <= 20; id++) {
+      const likertIndex = answers[id] ?? answers[String(id)];
+      if (likertIndex == null) {
+        throw new Error(`Missing answer for question ${id}`);
+      }
+      const meta = QUIZ_QUESTIONS[id];
+      if (likertIndex < 0 || likertIndex > 5 || !meta) {
+        throw new Error(`Invalid answer for question ${id}`);
+      }
+      totals[meta.axis] += likertDelta(meta.polarity, likertIndex);
+    }
+  } else {
+    throw new Error('answers must be an object keyed by question id or a 20-element array');
+  }
 
   const letters = {};
   for (const key of AXIS_KEYS) {
