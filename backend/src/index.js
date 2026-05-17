@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import cors from 'cors';
 import express from 'express';
+import authRouter from './routes/auth.js';
 import quizRouter from './routes/quiz.js';
 import analyzeRouter from './routes/analyze.js';
 
@@ -14,6 +15,7 @@ app.get('/health', (_req, res) => {
   res.json({ status: 'ok', service: 'roots-api' });
 });
 
+app.use('/api/auth', authRouter);
 app.use('/api/quiz', quizRouter);
 app.use('/api/analyze', analyzeRouter);
 

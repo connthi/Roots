@@ -1,39 +1,46 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import ProtectedRoute from '../../components/auth/ProtectedRoute.jsx';
 import DeepDiveQuiz from '../../components/deep-dive/DeepDiveQuiz.jsx';
-import {
-  getArchetypeProfile,
-  hasPersonalityQuiz,
-  loadProfile,
-} from '../../lib/profileSession.js';
+import { useAuth } from '../../context/AuthContext.jsx';
+import { getArchetypeProfile, hasPersonalityQuiz, loadProfile } from '../../lib/profileSession.js';
+import styles from '../../components/auth/auth.module.css';
 
-export default function DeepDivePage() {
+function DeepDiveContent() {
   const [ready, setReady] = useState(false);
   const [quizResult, setQuizResult] = useState(null);
   const [archetypeProfile, setArchetypeProfile] = useState(null);
-  const router = useRouter();
+  const { loading: authLoading } = useAuth();
 
   useEffect(() => {
+    if (authLoading) return;
     const data = loadProfile();
     if (!hasPersonalityQuiz()) {
-      router.replace('/survey');
+      window.location.href = '/survey';
       return;
     }
     const profile = getArchetypeProfile(data);
     setQuizResult(data.archetype);
     setArchetypeProfile(profile);
     setReady(true);
-  }, [router]);
+  }, [authLoading]);
 
   if (!ready || !quizResult || !archetypeProfile) {
     return (
-      <main style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', color: '#a8b5a0' }}>
-        Loading…
-      </main>
+      <div className={styles.loadingScreen}>
+        <div className={styles.spinner} />
+      </div>
     );
   }
 
   return <DeepDiveQuiz archetypeProfile={archetypeProfile} quizResult={quizResult} />;
+}
+
+export default function DeepDivePage() {
+  return (
+    <ProtectedRoute>
+      <DeepDiveContent />
+    </ProtectedRoute>
+  );
 }
