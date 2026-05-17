@@ -42,9 +42,6 @@ function DashboardContent() {
         <div className={styles.headerTop}>
           <p className={styles.brand}>Roots · Results</p>
           <div style={{ display: "flex", gap: "0.75rem" }}>
-            <Link href="/survey" className={styles.logoutBtn}>
-              Retake Quiz
-            </Link>
             <Link href="/home" className={styles.logoutBtn}>
               Home
             </Link>
