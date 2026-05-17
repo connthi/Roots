@@ -3,12 +3,15 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import DeepDiveTransition from '../deep-dive/DeepDiveTransition.jsx';
-import { clearProfile, saveProfile } from '../../lib/profileSession.js';
+import { useAuth } from '../../context/AuthContext.jsx';
+import { clearProfile, loadProfile, saveProfile } from '../../lib/profileSession.js';
+import { syncProgressToServer } from '../../lib/syncProgress.js';
 import { DISPLAY_QUESTIONS, LIKERT_LABELS } from '../../lib/quiz/questions.js';
 import { scoreQuiz } from '../../lib/quiz/score.js';
 import styles from './Quiz.module.css';
 
 export default function Quiz() {
+  const { updateOnboardingStep } = useAuth();
   const [phase, setPhase] = useState('welcome');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState({});
@@ -29,15 +32,16 @@ export default function Quiz() {
     }
   }
 
-  function finishQuiz(finalAnswers) {
+  async function finishQuiz(finalAnswers) {
     const finalResult = scoreQuiz(finalAnswers);
     setResult(finalResult);
 
-    saveProfile({
+    await syncProgressToServer('deep_dive', {
       archetype: finalResult,
       personalityComplete: true,
+      personalityAnswers: finalAnswers,
     });
-
+    updateOnboardingStep('deep_dive');
     setPhase('reveal');
   }
 
@@ -45,8 +49,10 @@ export default function Quiz() {
     if (currentIndex > 0) setCurrentIndex((i) => i - 1);
   }
 
-  function restart() {
+  async function restart() {
     clearProfile();
+    await syncProgressToServer('none', {});
+    updateOnboardingStep('none');
     setPhase('welcome');
     setCurrentIndex(0);
     setAnswers({});
@@ -69,7 +75,15 @@ export default function Quiz() {
             be honest.
           </p>
           <div className={styles.actions}>
-            <button type="button" className={styles.btnPrimary} onClick={() => setPhase('quiz')}>
+            <button
+              type="button"
+              className={styles.btnPrimary}
+              onClick={async () => {
+                await syncProgressToServer('personality', loadProfile() ?? {});
+                updateOnboardingStep('personality');
+                setPhase('quiz');
+              }}
+            >
               Start quiz
             </button>
           </div>

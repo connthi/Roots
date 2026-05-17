@@ -1,8 +1,5 @@
 const STORAGE_KEY = 'roots_profile';
 
-/**
- * @returns {object | null}
- */
 export function loadProfile() {
   if (typeof window === 'undefined') return null;
   try {
@@ -13,9 +10,6 @@ export function loadProfile() {
   }
 }
 
-/**
- * @param {object} patch
- */
 export function saveProfile(patch) {
   const existing = loadProfile() ?? {};
   const next = { ...existing, ...patch };

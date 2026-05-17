@@ -2,13 +2,13 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '../../context/AuthContext.jsx';
+import { postAnalyze } from '../../lib/api.js';
 import { buildAnalyzePayload } from '../../lib/deepDive/buildPayload.js';
-import { saveProfile } from '../../lib/profileSession.js';
 import { DEEP_DIVE_QUESTIONS } from '../../lib/deepDive/questions.js';
 import { getDeepDiveTransition } from '../../lib/deepDive/transitionCopy.js';
+import { syncProgressToServer } from '../../lib/syncProgress.js';
 import styles from './DeepDiveQuiz.module.css';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
 function formatMoney(n) {
   if (n == null || Number.isNaN(n)) return '0';
@@ -41,6 +41,7 @@ function isAnswered(question, answers, creditPaidInFull = false) {
  */
 export default function DeepDiveQuiz({ archetypeProfile, quizResult }) {
   const router = useRouter();
+  const { updateOnboardingStep } = useAuth();
   const [phase, setPhase] = useState('welcome');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState({});
@@ -80,30 +81,15 @@ export default function DeepDiveQuiz({ archetypeProfile, quizResult }) {
     const payload = buildAnalyzePayload(quizResult, finalAnswers);
 
     try {
-      const res = await fetch(`${API_URL}/api/analyze`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+      const data = await postAnalyze(payload);
 
-      const text = await res.text();
-      let data = {};
-      try {
-        data = text ? JSON.parse(text) : {};
-      } catch {
-        data = {};
-      }
-
-      if (!res.ok) {
-        throw new Error(data.error || data.detail || text || 'Failed to generate profile');
-      }
-
-      saveProfile({
+      await syncProgressToServer('complete', {
         archetype: quizResult,
         personalityComplete: true,
         deepDive: finalAnswers,
         bedrock: data,
       });
+      updateOnboardingStep('complete');
       sessionStorage.removeItem('roots_deep_dive_dismissed');
       router.push('/dashboard');
     } catch (err) {

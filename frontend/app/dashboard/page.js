@@ -2,37 +2,23 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import {
-  getArchetypeProfile,
-  hasDeepDive,
-  hasPersonalityQuiz,
-  loadProfile,
-} from '../../lib/profileSession.js';
+import ProtectedRoute from '../../components/auth/ProtectedRoute.jsx';
+import { useAuth } from '../../context/AuthContext.jsx';
+import { getArchetypeProfile, loadProfile } from '../../lib/profileSession.js';
 import styles from './dashboard.module.css';
 
-export default function DashboardPage() {
+function DashboardContent() {
   const [data, setData] = useState(null);
-  const router = useRouter();
+  const { logout } = useAuth();
 
   useEffect(() => {
-    const profile = loadProfile();
-    if (!hasPersonalityQuiz()) {
-      router.replace('/survey');
-      return;
-    }
-    if (!hasDeepDive()) {
-      router.replace('/deep-dive');
-      return;
-    }
-    setData(profile);
-  }, [router]);
+    setData(loadProfile());
+  }, []);
 
   if (!data) {
     return <div className={styles.loading}>Loading your dashboard...</div>;
   }
 
-  const quizResult = data.archetype;
   const archetypeProfile = getArchetypeProfile(data);
   const profile = data.bedrock?.profile;
 
@@ -40,6 +26,9 @@ export default function DashboardPage() {
     return (
       <div className={styles.container}>
         <div className={styles.loading}>Regenerating your profile…</div>
+        <Link href="/deep-dive" style={{ color: 'var(--accent)', marginTop: '1rem' }}>
+          Return to deep dive
+        </Link>
       </div>
     );
   }
@@ -48,10 +37,15 @@ export default function DashboardPage() {
     <div className={styles.container}>
       <header className={styles.header}>
         <div className={styles.headerTop}>
-          <p className={styles.brand}>Roots Dashboard</p>
-          <Link href="/" className={styles.logoutBtn}>
-            Sign Out
-          </Link>
+          <p className={styles.brand}>Roots · Results</p>
+          <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <Link href="/home" className={styles.logoutBtn}>
+              Home
+            </Link>
+            <button type="button" className={styles.logoutBtn} onClick={logout}>
+              Log out
+            </button>
+          </div>
         </div>
 
         <div className={styles.hero}>
@@ -183,5 +177,13 @@ export default function DashboardPage() {
         </section>
       </main>
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <ProtectedRoute requireComplete>
+      <DashboardContent />
+    </ProtectedRoute>
   );
 }

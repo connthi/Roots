@@ -13,7 +13,7 @@ export function DeepDiveTransitionTailwind({ archetype }) {
 
   return (
     <section className="relative mx-auto mb-8 max-w-5xl overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-[#1a2218] via-[#0f1410] to-[#141c16] p-6 shadow-2xl shadow-black/40 md:p-8">
-      <motionDiv
+      <div
         className="pointer-events-none absolute -right-10 -top-20 h-64 w-64 rounded-full bg-emerald-400/10 blur-3xl"
         aria-hidden
       />
@@ -88,14 +88,14 @@ export function DeepDiveTransitionTailwind({ archetype }) {
             ))}
             <div className="flex-1 rounded-t-md bg-gradient-to-t from-emerald-600 to-emerald-400 shadow-lg shadow-emerald-500/20" style={{ height: '95%' }} />
           </div>
-          <motionDiv className="mt-3 flex justify-between text-[11px] text-zinc-500">
+          <div className="mt-3 flex justify-between text-[11px] text-zinc-500">
             <span className="flex items-center gap-1">
               <span className="h-2 w-2 rounded-full bg-zinc-600" /> Current path
             </span>
             <span className="flex items-center gap-1">
               <span className="h-2 w-2 rounded-full bg-emerald-400" /> With your real data
             </span>
-          </motionDiv>
+          </div>
           <p className="mt-3 text-center text-xs font-semibold text-emerald-400">🔒 Unlocks after 10 inputs</p>
         </div>
       </div>
@@ -103,10 +103,3 @@ export function DeepDiveTransitionTailwind({ archetype }) {
   );
 }
 
-function motionDiv({ className, children, ...rest }) {
-  return (
-    <div className={className} {...rest}>
-      {children}
-    </div>
-  );
-}
