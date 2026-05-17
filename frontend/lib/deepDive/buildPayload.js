@@ -17,14 +17,26 @@ export function buildAnalyzePayload(archetypeResult, answers) {
   const totalInvested = num(answers.total_invested);
   const monthlySavings = num(answers.monthly_savings_rate);
   const runwayMonths = num(answers.runway_months);
+  const emergencyThreshold = answers.emergency_threshold ?? "";
 
   const meta = archetypeResult.archetype ?? archetypeResult;
 
+  // Calculate derived metrics for guardrail assessment
+  const totalMonthlyExpenses = fixedExpenses + discretionaryMonthly;
+  const totalDebt = creditDebt + longTermDebt;
+  const annualIncome = monthlyIncome * 12;
+
+  const emergencyFundRatio =
+    totalMonthlyExpenses > 0 ? liquidCash / totalMonthlyExpenses : 0;
+  const debtToIncome = annualIncome > 0 ? totalDebt / annualIncome : 0;
+
   return {
+    // Personality mapping
     personality_code: archetypeResult.code,
     archetype_name: meta.name,
     age: 22,
 
+    // Core deep dive data (10 fields)
     monthly_income: monthlyIncome,
     liquid_cash: liquidCash,
     fixed_expenses: fixedExpenses,
@@ -34,19 +46,33 @@ export function buildAnalyzePayload(archetypeResult, answers) {
     total_invested: totalInvested,
     monthly_savings_rate: monthlySavings,
     runway_months: runwayMonths,
-    emergency_threshold: answers.emergency_threshold ?? '',
+    emergency_threshold: emergencyThreshold,
 
-    annual_income: monthlyIncome * 12,
+    // Derived metrics for analysis
+    emergency_fund_ratio: emergencyFundRatio,
+    debt_to_income: debtToIncome,
+    total_monthly_expenses: totalMonthlyExpenses,
+
+    // Annual/calculated fields (for backward compatibility)
+    annual_income: annualIncome,
     monthly_rent: Math.round(fixedExpenses * 0.42),
-    monthly_food: Math.round(fixedExpenses * 0.28 + discretionaryMonthly * 0.35),
+    monthly_food: Math.round(
+      fixedExpenses * 0.28 + discretionaryMonthly * 0.35,
+    ),
     monthly_transport: Math.round(fixedExpenses * 0.08),
     monthly_entertainment: discretionaryMonthly,
     monthly_subscriptions: Math.round(fixedExpenses * 0.12),
     monthly_savings: monthlySavings,
-    debt_total: creditDebt + longTermDebt,
-    debt_monthly_payment: Math.round((creditDebt * 0.02 + longTermDebt * 0.01) / 2) || 0,
-    risk_tolerance: archetypeResult.code?.[3] === 'A' ? 'moderate-high' : 'moderate-low',
-    budget_tracking: archetypeResult.code?.[1] === 'S' ? 'detailed' : 'automated',
+    debt_total: totalDebt,
+    debt_monthly_payment:
+      Math.round((creditDebt * 0.02 + longTermDebt * 0.01) / 2) || 0,
+
+    // Archetype-derived behavioral insights
+    risk_tolerance:
+      archetypeResult.code?.[3] === "A" ? "moderate-high" : "moderate-low",
+    budget_tracking:
+      archetypeResult.code?.[1] === "S" ? "detailed" : "automated",
+    spending_personality: archetypeResult.code,
   };
 }
 

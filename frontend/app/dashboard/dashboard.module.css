@@ -2,7 +2,8 @@
   min-height: 100vh;
   background-color: #0d1117;
   color: #c9d1d9;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
   padding: 0;
   margin: 0;
 }
@@ -18,7 +19,11 @@
 }
 
 .header {
-  background: linear-gradient(180deg, rgba(22, 27, 34, 1) 0%, rgba(13, 17, 23, 1) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(22, 27, 34, 1) 0%,
+    rgba(13, 17, 23, 1) 100%
+  );
   border-bottom: 1px solid #30363d;
   padding: 2rem;
 }
@@ -111,7 +116,7 @@
   padding: 1.5rem;
   text-align: center;
   min-width: 140px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
 .scoreLabel {
@@ -159,7 +164,7 @@
 }
 
 .sectionTitle::before {
-  content: '';
+  content: "";
   display: block;
   width: 4px;
   height: 24px;
@@ -229,7 +234,9 @@
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .recCard:hover {
@@ -354,4 +361,220 @@
   .scoreBox {
     flex: 1;
   }
+}
+
+/* New Sections */
+
+/* Financial Narrative */
+.narrativeCard {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 2rem;
+  line-height: 1.8;
+}
+
+.narrativeText {
+  color: #c9d1d9;
+  margin: 0;
+  font-size: 1rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Risk Assessment */
+.riskCard {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.riskHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+
+.riskBadge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.riskLevelhigh {
+  background-color: rgba(248, 81, 73, 0.1);
+  color: #f85149;
+  border: 1px solid rgba(248, 81, 73, 0.2);
+}
+
+.riskLevelmedium {
+  background-color: rgba(215, 133, 26, 0.1);
+  color: #d78526;
+  border: 1px solid rgba(215, 133, 26, 0.2);
+}
+
+.riskLevelow {
+  background-color: rgba(63, 185, 80, 0.1);
+  color: #3fb950;
+  border: 1px solid rgba(63, 185, 80, 0.2);
+}
+
+.riskExplanation {
+  margin: 0;
+  color: #c9d1d9;
+  line-height: 1.6;
+  flex: 1;
+}
+
+/* Flags */
+.flagsGroup {
+  padding-top: 1rem;
+  border-top: 1px solid #30363d;
+}
+
+.flagsTitle {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 0.75rem 0;
+}
+
+.flagsList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.warningFlag {
+  color: #d78526;
+  font-size: 0.95rem;
+}
+
+.strengthFlag {
+  color: #3fb950;
+  font-size: 0.95rem;
+}
+
+/* Action Timeline */
+.timelineGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.timelineBox {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.timelineHeader {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #58a6ff;
+}
+
+.timelineList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.timelineItem {
+  color: #c9d1d9;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Income & Expense Row */
+.incomeExpenseRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #30363d;
+}
+
+.incomeExpenseItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.label {
+  font-size: 0.85rem;
+  color: #8b949e;
+  font-weight: 500;
+}
+
+.amount {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #c9d1d9;
+}
+
+/* Disclaimers */
+.disclaimerCard {
+  background-color: rgba(139, 148, 158, 0.05);
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.disclaimerItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.disclaimerLabel {
+  color: #8b949e;
+  margin: 0;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.disclaimerText {
+  color: #c9d1d9;
+  margin: 0;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.complianceList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.complianceList li {
+  color: #3fb950;
+  font-size: 0.95rem;
 }
