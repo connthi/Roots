@@ -145,6 +145,18 @@
   /* Focus ring */
   --ring: 0 0 0 3px var(--brand-ring);
 
+  /* ----------------------------------------------------------
+     BACKWARDS-COMPATIBILITY ALIASES
+     The original Roots app used --text, --accent, --radius, etc.
+     These aliases let the existing .module.css files keep working
+     without rewrites.
+     ---------------------------------------------------------- */
+  --text:        var(--fg);
+  --text-muted:  var(--fg-muted);
+  --accent:      var(--brand);
+  --accent-dim:  var(--brand-hover);
+  --radius:      var(--r-md);
+
   /* ---------- MOTION ---------- */
   --ease-out:  cubic-bezier(.2, .8, .2, 1);
   --ease-in:   cubic-bezier(.4, 0, 1, 1);
