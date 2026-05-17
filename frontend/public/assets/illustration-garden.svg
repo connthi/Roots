@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 280" fill="none">
+  
+  <rect width="400" height="280" fill="#f5efe1"></rect>
+  
+  <path d="M0 200 Q 100 192, 200 200 T 400 200" stroke="#c4623f" stroke-width="2" stroke-linecap="round" stroke-dasharray="2,4" opacity="0.5"></path>
+  
+  <g transform="translate(80, 90)">
+    <path d="M30 110 L30 40" stroke="#6b6d36" stroke-width="3" stroke-linecap="round"></path>
+    <path d="M30 70 C 12 68, 4 50, 8 30 C 28 30, 38 56, 30 70 Z" fill="#8a8748"></path>
+    <path d="M30 50 C 50 50, 60 32, 58 12 C 38 12, 28 36, 30 50 Z" fill="#6b6d36"></path>
+    
+    <path d="M30 110 Q 22 124, 14 138 M30 110 Q 30 130, 28 148 M30 110 Q 38 124, 46 138 M30 110 Q 36 132, 42 152" stroke="#c4623f" stroke-width="1.5" stroke-linecap="round" fill="none"></path>
+  </g>
+  
+  <g transform="translate(200, 110)">
+    <path d="M25 90 L25 30" stroke="#6b6d36" stroke-width="2.5" stroke-linecap="round"></path>
+    <path d="M25 50 C 8 48, 0 30, 4 14 C 22 14, 32 38, 25 50 Z" fill="#7c9263"></path>
+    <path d="M25 38 C 42 38, 50 24, 48 8 C 30 8, 22 26, 25 38 Z" fill="#6b6d36"></path>
+    <path d="M25 90 Q 18 102, 12 112 M25 90 Q 28 106, 24 118 M25 90 Q 32 102, 36 114" stroke="#c4623f" stroke-width="1.5" stroke-linecap="round" fill="none"></path>
+  </g>
+  
+  <g transform="translate(300, 140)">
+    <path d="M20 60 L20 30" stroke="#6b6d36" stroke-width="2" stroke-linecap="round"></path>
+    <path d="M20 38 C 8 36, 4 24, 6 12 C 18 12, 26 28, 20 38 Z" fill="#aaa66c"></path>
+    <path d="M20 32 C 32 32, 38 22, 36 8 C 24 8, 18 22, 20 32 Z" fill="#8a8748"></path>
+    <path d="M20 60 Q 14 70, 10 80 M20 60 Q 22 74, 24 84" stroke="#c4623f" stroke-width="1.2" stroke-linecap="round" fill="none"></path>
+  </g>
+  
+  <circle cx="340" cy="60" r="22" fill="#c89d3f" opacity="0.9"></circle>
+  <circle cx="340" cy="60" r="14" fill="none" stroke="#8c6917" stroke-width="1.2" opacity="0.5"></circle>
+  <text x="340" y="66" text-anchor="middle" font-family="Newsreader, Georgia, serif" font-size="20" font-weight="500" fill="#322a1d">$</text>
+</svg>
