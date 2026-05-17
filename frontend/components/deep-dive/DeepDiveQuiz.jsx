@@ -85,8 +85,18 @@ export default function DeepDiveQuiz({ archetypeProfile, quizResult }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to generate profile');
+
+      const text = await res.text();
+      let data = {};
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        data = {};
+      }
+
+      if (!res.ok) {
+        throw new Error(data.error || data.detail || text || 'Failed to generate profile');
+      }
 
       saveProfile({
         archetype: quizResult,

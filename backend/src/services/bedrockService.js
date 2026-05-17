@@ -105,17 +105,26 @@ export async function generateProfile(surveyData) {
     },
   });
 
-  const response = await client.send(command);
-  const rawText = response.output?.message?.content?.[0]?.text;
+  try {
+    const response = await client.send(command);
+    const rawText = response.output?.message?.content?.[0]?.text;
 
-  if (!rawText) {
-    throw new Error('Bedrock returned an empty response');
+    if (!rawText) {
+      throw new Error('Bedrock returned an empty response');
+    }
+
+    // Parse the JSON from the response (strip markdown fences if present)
+    const cleaned = rawText.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+    const profile = JSON.parse(cleaned);
+    return profile;
+  } catch (err) {
+    console.error('[Bedrock] Error generating profile:', err.message || err);
+    if (!MODEL_ID || process.env.DRY_RUN === 'true' || process.env.NODE_ENV !== 'production') {
+      console.warn('[Bedrock] Falling back to mock profile for local development.');
+      return getMockProfile(surveyData);
+    }
+    throw new Error(`Bedrock generation failed: ${err.message}`);
   }
-
-  // Parse the JSON from the response (strip markdown fences if present)
-  const cleaned = rawText.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
-  const profile = JSON.parse(cleaned);
-  return profile;
 }
 
 /**
