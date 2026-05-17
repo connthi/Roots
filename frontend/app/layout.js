@@ -5,12 +5,16 @@ export const metadata = {
 
 import './globals.css';
 import Providers from './providers.js';
+import Chatbot from '../components/chatbot/Chatbot.jsx';
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          <Chatbot />
+        </Providers>
       </body>
     </html>
   );
